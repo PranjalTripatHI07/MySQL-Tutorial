@@ -126,3 +126,21 @@ from (select emp_no,
 
 where temp.row_num = 2;
 
+
+
+
+
+-- Retrieve the employee number (emp_no) and the lowest contract 
+-- salary value (salary, using the alias min_salary) for all managers. 
+-- To obtain the desired output, you need to refer to the dept_manager 
+-- and salaries tables.
+
+select temp.emp_no,
+       min(salary) as min_salary
+from (select emp_no,
+             salary,
+             row_number() over(Partition by emp_no  order by salary asc) as row_num
+      from salaries) as temp 
+inner join dept_manager as dept
+on dept.emp_no = temp.emp_no
+group by temp.emp_no;
