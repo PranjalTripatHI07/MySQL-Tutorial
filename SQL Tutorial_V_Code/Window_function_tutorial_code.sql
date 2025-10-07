@@ -144,3 +144,20 @@ from (select emp_no,
 inner join dept_manager as dept
 on dept.emp_no = temp.emp_no
 group by temp.emp_no;
+
+
+-- Topic -> Rank() Ranking window function 
+-- Rank() window function syntax 
+select column_name1,
+       column_name2, .....,
+       rank() over(Partition by column_name, ..... order by column_name asc | desc)
+from table_name;
+
+-- Alternate syntax for rank() window function
+-- here we use window clause 
+
+select column_name1,
+       column_name2, .....,
+       rank() over window_clause_name as rename_name
+from table_name
+window window_clause_name as (Partition by column_name, ..... order by column_name);
