@@ -160,7 +160,7 @@ select column_name1,
        column_name2, .....,
        rank() over window_clause_name as rename_name
 from table_name
-window window_clause_name as (Partition by column_name, ..... order by column_name);
+window window_clause_name as (Partition by column_name, ..... order by column_name asc | desc);
 
 
 -- Example 1 
@@ -177,3 +177,46 @@ select emp_no,
        salary,
        rank() over(Partition by emp_no order by salary desc) as rank_num
 from salaries;
+
+
+
+
+-- Topic -> Dense_rank() window function 
+-- Dense_rank() window function syntax 
+
+SELECT
+    column_name1,
+    column_name2, .....,
+    DENSE_RANK() OVER (PARTITION BY column_name, ..... ORDER BY column_name ASC | DESC)
+FROM
+    table_name;
+
+
+-- Alternate syntax for Dense_rank() window function
+-- here we use window clause 
+
+select column_name1,
+       column_name2, .....,
+       dense_rank() over window_clause_name as rename_name
+from table_name
+window window_clause_name as (Partition by column_name, ..... order by column_name asc | desc);
+
+
+
+-- Example 1
+select emp_no,
+       salary,
+       dense_rank() over(Partition by emp_no order by salary desc) as rank_num
+
+from salaries 
+where emp_no = 10005;
+
+
+-- Example 2 
+select emp_no,
+       salary,
+       dense_rank() over w as rank_num
+from salaries
+where emp_no = 10005
+window w as (Partition by emp_no order by salary desc);
+
