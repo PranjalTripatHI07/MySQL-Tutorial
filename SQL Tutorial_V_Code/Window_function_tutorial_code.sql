@@ -161,3 +161,19 @@ select column_name1,
        rank() over window_clause_name as rename_name
 from table_name
 window window_clause_name as (Partition by column_name, ..... order by column_name);
+
+
+-- Example 1 
+
+select emp_no,
+       salary,
+       rank() over w as rank_num
+from salaries
+where emp_no = 10005
+window w as (Partition by emp_no order by salary desc);
+
+-- Example 2
+select emp_no,
+       salary,
+       rank() over(Partition by emp_no order by salary desc) as rank_num
+from salaries;
