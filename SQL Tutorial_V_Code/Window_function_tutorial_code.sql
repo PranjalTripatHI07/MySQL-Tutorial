@@ -220,3 +220,75 @@ from salaries
 where emp_no = 10005
 window w as (Partition by emp_no order by salary desc);
 
+
+-- Exercise 1
+
+-- Write a query containing a window function to obtain 
+--all salary values that employee number 10560 has ever signed a 
+--contract for.
+-- Order and display the obtained salary values from highest to lowest.
+
+-- sol 
+
+select emp_no,
+       salary,
+       row_number() over w as row_num
+from salaries 
+where emp_no = 10560
+window w as (Partition by emp_no order by salary desc);
+
+
+
+--  Exercise 2
+
+--Write a query that upon execution, displays the number of 
+--salary contracts that each manager has ever signed while working 
+--in the company.
+
+-- sol
+
+select dept.emp_no, 
+       count(salary) as no_of_salary_contracts
+from dept_manager as dept
+inner join salaries as s
+on dept.emp_no = s.emp_no
+group by emp_no
+order by emp_no;
+
+
+
+-- Exercise 4
+
+-- Write a query that upon execution retrieves a result set 
+--containing all salary values that employee 10560 has ever signed a 
+--contract for. Use a window function to rank all salary values from 
+--highest to lowest in a way that equal salary values bear the same 
+--rank and that gaps in the obtained ranks for subsequent rows are allowed
+
+-- sol
+
+select emp_no,
+       salary,
+       rank() over w as rank_num
+from salaries 
+where emp_no  = 10560
+window w as (Partition by emp_no order by salary desc);
+
+
+-- Exercise 5
+
+--Write a query that upon execution retrieves a result set containing 
+--all salary values that employee 10560 has ever signed a contract for. 
+--Use a window function to rank all salary values from highest to 
+--lowest in a way that equal salary values bear the same rank and that
+--gaps in the obtained ranks for subsequent rows are not allowed.
+
+-- sol
+
+select emp_no,
+       salary,
+       dense_rank() over w as rank_num
+from salaries 
+where emp_no  = 10560
+window w as (Partition by emp_no order by salary desc);
+
