@@ -292,3 +292,111 @@ from salaries
 where emp_no  = 10560
 window w as (Partition by emp_no order by salary desc);
 
+
+
+-- More Complex examples 
+
+-- Example 1 
+-- Here we use window functions and joins together for complex Query
+
+select dept.dept_no,
+       dept.dept_name,
+       m.emp_no,
+       rank() over w as department_salary_ranking,
+       s.salary,
+       s.from_date as salary_from_date,
+       s.to_date as salary_to_date,
+       m.from_date as dept_manager_from_date,
+       m.to_date as dept_manager_to_date      
+from dept_manager as m
+inner join salaries as s
+on m.emp_no = s.emp_no and s.from_date between m.from_date and m.to_date
+       and s.to_date between m.from_date and m.to_date
+inner join departments as dept
+on dept.dept_no = m.dept_no
+window w as (Partition by m.dept_no order by s.salary desc);
+
+
+
+-- Exercise 1
+-- sol
+
+select e.emp_no,
+       s.salary,
+       rank() over w as rank_num
+from employees as e
+inner join salaries as s
+on e.emp_no = s.emp_no
+where e.emp_no between 10500 and 10600
+window w as (Partition by e.emp_no order by s.salary desc);
+
+
+-- Exercise 2
+-- sol
+
+select e.emp_no,
+       dense_rank() over w as rank_num,
+       s.salary,
+       e.hire_date,
+       s.from_date,
+       (year(s.from_Date) - year(e.hire_date)) as year_from_start
+from employees as e
+inner join salaries as s
+on e.emp_no  = s.emp_no
+       and year(s.form_date) - year(e.hire_date) >= 5
+where e.emp_no between 10500 and 10600
+window w as (Partition by e.emp_no order by s.salary desc);
+
+
+
+
+-- Exercise 4
+-- Allowing gaps in the obtained ranks for subsequent rows, rank the 
+--contract salary values from highest to lowest for employees 10001, 
+--10002, 10003, 10004, 10005, and 10006.
+--Every row in the desired output should contain an employee number 
+--(emp_no) obtained from the employees table, and a salary value 
+--obtained from the salaries table. Additionally, include the salary 
+--ranking values between the two columns in a field named 
+--employee_salary_ranking.
+
+--sol
+select e.emp_no,
+       rank() over w as employee_salary_ranking,
+       s.salary 
+       
+from employees as e
+inner join salaries as s 
+on e.emp_no = s.emp_no
+where e.emp_no in(10001,10002,10003,10004,10005,10006)
+window w as (Partition by e.emp_no order by s.salary desc);
+
+
+-- Exercise 5
+--Without allowing gaps in the obtained ranks for subsequent rows, 
+--rank the contract salary values from highest to lowest for 
+--employees 10001, 10002, and 10003.
+--Every row in the desired output should contain the relevant 
+--employee number (emp_no) and the hire date (hire_date) from the 
+--employees table, as well as the relevant salary value and the 
+--start date (from_date) from the salaries table. Additionally, 
+--include the salary ranking values in a field named 
+--employee_salary_ranking.
+--Retrieve only data for contracts that have started prior to 2000. 
+--Sort your data by the  emp_no in ascending order, referring to the 
+--employees table.
+
+select e.emp_no,
+       dense_rank() over w as employee_salary_ranking,
+       s.salary,
+       e.hire_date,
+       s.from_date
+    
+from employees as e 
+inner join salaries as s 
+on e.emp_no = s.emp_no  and s.from_date < '2000-01-01'
+
+where e.emp_no in(10001,10002,10003)
+window w as (Partition by e.emp_no order by s.salary desc)
+order by e.emp_no asc;
+
