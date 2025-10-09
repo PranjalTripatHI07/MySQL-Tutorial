@@ -400,3 +400,27 @@ where e.emp_no in(10001,10002,10003)
 window w as (Partition by e.emp_no order by s.salary desc)
 order by e.emp_no asc;
 
+
+
+
+
+
+
+-- Topic -> Value window functions 
+
+-- lag() value window function syntax 
+
+select col_name1,
+       col_name2, .....,
+       lag(specific_col_name, no_of_rows_look_back, default_value) over(Partition by col_name, ..... order by col_name asc | desc)
+from table_name;
+
+
+
+-- alternate syntax for lag() value window function using window clause
+-- here we use window clause
+select col_name1,
+       col_name2, .....,
+       lag(specific_col_name, no_of_rows_look_back, default_value) over window_clause_name as rename_name
+from table_name
+window window_clause_name as (Partition by col_name, ..... order by col_name asc | desc);
