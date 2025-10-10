@@ -424,3 +424,27 @@ select col_name1,
        lag(specific_col_name, no_of_rows_look_back, default_value) over window_clause_name as rename_name
 from table_name
 window window_clause_name as (Partition by col_name, ..... order by col_name asc | desc);
+
+
+
+-- Example 1
+select emp_no, 
+       salary,
+       lag(salary) over(Partition by emp_no order by salary asc) as previous_salary
+from salaries 
+where emp_no = 10001;
+
+
+
+-- Example 2 
+-- Here we use window clause 
+select emp_no,
+       salary,
+       lag(salary) over w as previous_salary
+
+from salaries 
+where emp_no = 10001
+window w as (Partition by emp_no order by salary);
+
+
+-- Example 4
