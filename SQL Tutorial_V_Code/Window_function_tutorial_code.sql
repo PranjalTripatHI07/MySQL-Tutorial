@@ -447,4 +447,28 @@ where emp_no = 10001
 window w as (Partition by emp_no order by salary);
 
 
--- Example 4
+-- Topic Lead() value window function
+
+-- Lead() value window function syntax 
+
+select col_name1,
+       col_name2, .....,
+       lead(specific_column_name, no_of_rows_looks_ahead, default_value) over(Partition by col_name, ..... order by col_name asc|desc)
+
+from table_name;
+
+-- Alterntive syntax for lead() value window function
+-- here we use window clause 
+
+select col_name1,
+       col_name2, ....., 
+       lead(specific_col_name, no_of_rows_looks_ahead, default_value) over window_clause_name as rename_name
+
+from table_name
+window window_clause_name as (Partition_by col_name, ..... order by col_name asc|desc);
+
+
+-- Example 1
+
+
+
