@@ -444,7 +444,9 @@ select emp_no,
 
 from salaries 
 where emp_no = 10001
-window w as (Partition by emp_no order by salary);
+window w as (Partition by emp_no order by salary asc);
+
+
 
 
 -- Topic Lead() value window function
@@ -470,5 +472,125 @@ window window_clause_name as (Partition_by col_name, ..... order by col_name asc
 
 -- Example 1
 
+select emp_no, 
+       salary,
+       lead(salary) over(Partition by emp_no order by salary asc) as next_salary 
+from salaries 
+where emp_no = 10001;
+
+
+-- Example 2
+
+select emp_no,
+       salary,
+       lead(salary) over w as next_salary
+
+from salaries 
+where emp_no = 10001
+window w as (Partition by emp_no order by salary asc);
+
+
+-- More Example 
+-- Example 1
+-- here we use lag() and lead() window function to find the difference between previous and nex salary with current salary
+
+select emp_no,
+       salary,
+       lag(salary) over w as previous_salary,
+       lead(salary) over w as next_salary,
+       salary - lag(salary) over w as diff_salary_current_previous,
+       salary - lead(salary) over w as diff_salary_next_current
+
+from salaries
+where emp_no = 10001
+window w as (order by salary asc);
+
+
+
+-- Exercise 1
+-- sol
+SELECT
+    emp_no,
+    salary,
+    LAG(salary) OVER w AS previous_salary,
+    LEAD(salary) OVER w AS next_salary,
+    salary - LAG(salary) OVER w AS diff_between_current_and_previous_salary,
+    salary - LEAD(salary) OVER w AS diff_between_current_and_next_salary
+FROM
+    salaries
+WHERE
+    emp_no IN (10500, 10600) AND salary > 80000
+WINDOW w AS (PARTITION BY emp_no ORDER BY salary ASC);
+
+
+
+-- Exercise 2 
+-- sol
+
+SELECT emp_no,
+       salary,
+       LAG(salary) OVER w AS previous_salary,
+       LAG(salary, 2) OVER w AS 1_before_previous_salary,
+       LEAD(salary) OVER w AS next_salary,
+       LEAD(salary, 2) OVER w AS 1_after_next_salary
+
+FROM salaries
+
+WINDOW w AS (PARTITION BY emp_no ORDER BY salary)
+
+LIMIT 1000;
+
+
+
+-- Example 4 
+-- For employees with employee numbers between 10003 and 10008, 
+-- inclusive, and their salary contracts with values less than 
+-- $70,000, retrieve the following data from the salaries table:
+-- employee number (emp_no)
+-- salary (salary)
+-- previous salary (previous_salary)
+-- next salary (next_salary)
+-- the difference between the current salary of a certain employee 
+--and their previous salary (diff_salary_current_previous)
+-- the difference between the next salary of a certain employee and 
+-- their current salary (diff_salary_next_current).
+
+-- sol 
+
+select emp_no,
+       salary,
+       lag(salary) over w as previous_salary,
+       lead(salary) over w as next_salary,
+       salary - lag(salary) over w as diff_salary_current_previous,
+       lead(salary) over w - salary  as diff_salary_next_current
+       
+from salaries 
+where emp_no between 10004 and 10008 and salary < 70000
+window w as (Partition by emp_no order by salary asc);
+
+
+
+-- Exercise 5
+-- Retrieve the following data from the salaries table:
+-- employee number (emp_no)
+-- salary (salary)
+-- use a window function to obtain the salary value of three contracts 
+-- prior to the given employee contract salary value, if applicable. 
+-- Name the column _before_previous_salary
+-- use a window function to obtain the salary value of three 
+-- contracts after the given employee contract salary value, 
+-- if applicable. Name the column _after_next_salary.
+-- To obtain the desired output, partition the data by employee number (emp_no) and order by salary (salary) in ascending order. Retrieve only the first one hundred rows of data.
+
+-- sol
+
+select emp_no,
+       salary,
+       lag(salary, 2) over w as _before_previous_salary,
+       lead(salary, 2) over w as _after_next_salary
+       
+from salaries 
+window w as (Partition by emp_no order by salary asc)
+limit 100;
 
 
