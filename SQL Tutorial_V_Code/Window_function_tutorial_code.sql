@@ -594,3 +594,50 @@ window w as (Partition by emp_no order by salary asc)
 limit 100;
 
 
+
+
+-- Topic -> First_value() value window function 
+
+-- Syntax for First_value() value window function
+
+select col_name1, 
+       col_name2, ....., 
+       first_value(specific_col_name) over(Partition by col_name, ..... order by col_name asc | desc)
+from table_name;
+
+
+
+-- Alternative syntax for first_value() value window function (using window clause) 
+
+select col_name1, 
+       col_name2, ....., 
+       last_value(specific_col_name) over window_clause_name as rename_name
+from table_name
+window window_clause_name as (Partition by col_name, ..... order by col_name asc | desc);
+
+
+
+
+
+
+-- Topic -> Last_value() value windoow function
+
+-- Syntax for last_value() value window function
+
+select col_name1, 
+       col_name2, ....., 
+       last_value(specific_col_name) over(Partition by col_name, ..... order by col_name asc | desc 
+rows between unbounded preceding and unbounded following)
+from table_name;
+
+
+-- Alternative syntax for last_value() value window function (using window clause) 
+
+select col_name1, 
+       col_name2, ....., 
+       last_value(specific_col_name) over window_clause_name as rename_name
+from table_name
+window window_clause_name as (Partition by col_name, ..... order by col_name asc | desc 
+rows between unbounded preceding and unbounded following);
+
+
