@@ -641,3 +641,35 @@ window window_clause_name as (Partition by col_name, ..... order by col_name asc
 rows between unbounded preceding and unbounded following);
 
 
+
+
+-- Topic ->  Nth_value() value window function 
+
+-- Syntax for nth_value() value window function
+
+SELECT
+    col_name1,
+    col_name2,
+    .....,
+    NTH_VALUE(col_name, nth_position) OVER(
+    PARTITION BY col_name, .....
+    ORDER BY col_name ASC | DESC
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+FROM
+    table_name;
+
+
+
+-- Syntax for nth_value() value window function by using window clause
+
+SELECT
+    col_name1,
+    col_name2,
+    .....,
+    NTH_VALUE(col_name, nth_position) OVER window_clause_name AS rename_name
+FROM
+    table_name
+WINDOW window_clause_name AS (
+    PARTITION BY col_name, .....
+    ORDER BY col_name ASC | DESC
+    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING);
