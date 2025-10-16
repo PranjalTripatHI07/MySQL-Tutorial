@@ -673,3 +673,96 @@ WINDOW window_clause_name AS (
     PARTITION BY col_name, .....
     ORDER BY col_name ASC | DESC
     ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING);
+
+
+
+
+-- Topic - Aggrigate window function 
+
+-- Syntax for Aggregate Window function
+
+select col_name1,
+       col_name2, .....,
+       aggregate_function(col_name) over(Partition by col_name, ..... order by col_name asc | desc)       
+from table_name;
+
+
+
+-- Execise 1
+
+select s1.emp_no,
+       s.salary,
+       s.form_date,
+       s.to_date
+from salaries as s
+inner join (select emp_no, 
+                   min(from_date) as from_date
+            from salaries
+            group by emp_no) as s1
+on s.emp_no = s1.emp_no
+where s.from_date = s1.from_date;
+
+
+
+
+-- Example 1
+
+USE employees;
+ 
+SELECT * FROM dept_emp LIMIT 1000;
+SELECT * FROM dept_emp WHERE emp_no = 10010 ORDER BY from_date;
+SELECT * FROM dept_emp WHERE emp_no = 10018 ORDER BY from_date;
+ 
+SELECT * FROM salaries WHERE emp_no = 10010 ORDER BY from_date;
+ 
+ 
+SELECT 
+    de.emp_no, de.dept_no, de.from_date, de.to_date
+FROM
+    dept_emp de
+        JOIN
+    (SELECT 
+        emp_no, MAX(from_date) AS from_date
+    FROM
+        dept_emp
+    GROUP BY emp_no) de1 ON de1.emp_no = de.emp_no
+WHERE
+    de.to_date > SYSDATE()
+        AND de.from_date = de1.from_date;
+ 
+ 
+SELECT 
+    de2.emp_no, d.dept_name, s2.salary, AVG(s2.salary) OVER w AS average_salary_per_department
+FROM
+    (SELECT 
+    de.emp_no, de.dept_no, de.from_date, de.to_date
+FROM
+    dept_emp de
+        JOIN
+    (SELECT 
+        emp_no, MAX(from_date) AS from_date
+    FROM
+        dept_emp
+    GROUP BY emp_no) de1 ON de1.emp_no = de.emp_no
+WHERE
+    de.to_date > SYSDATE()
+        AND de.from_date = de1.from_date) de2
+        JOIN
+    (SELECT 
+    s1.emp_no, s.salary, s.from_date, s.to_date
+FROM
+    salaries s
+        JOIN
+    (SELECT 
+        emp_no, MAX(from_date) AS from_date
+    FROM
+        salaries	
+    GROUP BY emp_no) s1 ON s.emp_no = s1.emp_no
+WHERE
+    s.to_date > SYSDATE()
+        AND s.from_date = s1.from_date) s2 ON s2.emp_no = de2.emp_no
+			JOIN
+    departments d ON d.dept_no = de2.dept_no
+GROUP BY de2.emp_no, d.dept_name
+WINDOW w AS (PARTITION BY de2.dept_no)
+ORDER BY de2.emp_no;
