@@ -687,6 +687,16 @@ select col_name1,
 from table_name;
 
 
+-- Alternative Syntax for Aggregate window function by using window clause 
+
+select col_name1,
+	   col_name2, .....,
+	   Aggregate_function(co_name) over window_clause_name as rename_name
+from table_name
+window window_clause_name as (Partition by col_name, ..... order by col_name asc | desc);
+
+
+
 
 -- Execise 1
 
@@ -766,3 +776,69 @@ WHERE
 GROUP BY de2.emp_no, d.dept_name
 WINDOW w AS (PARTITION BY de2.dept_no)
 ORDER BY de2.emp_no;
+
+
+
+
+-- Exercise 2
+/**
+Consider the employees' contracts that have been signed after 
+the 1st of January 2000 and terminated before the 1st of January 2002 
+(as registered in the "dept_emp" table).
+
+Create a MySQL query that will extract the following information 
+about these employees:
+
+- Their employee number
+
+- The salary values of the latest contracts they have signed during 
+the suggested time period
+
+- The department they have been working in (as specified in the 
+latest contract they've signed during the suggested time period)
+
+- Use a window function to create a fourth field containing 
+the average salary paid in the department the employee was last 
+working in during the suggested time period. Name that 
+field "average_salary_per_department".
+
+**/
+SELECT de2.emp_no, 
+	   d.dept_name, 
+	   s2.salary, 
+	   AVG(s2.salary) OVER w AS average_salary_per_department
+	
+FROM (SELECT de.emp_no, 
+	         de.dept_no, 
+	         de.from_date, 
+	         de.to_date 
+	 FROM dept_emp de
+	 INNER JOIN (SELECT emp_no, 
+	                    MAX(from_date) AS from_date 
+	             FROM dept_emp 
+	             GROUP BY emp_no) AS de1 
+	 ON de1.emp_no = de.emp_no
+	 WHERE de.to_date < '2002-01-01' AND de.from_date > '2000-01-01' 
+	 AND de.from_date = de1.from_date) AS de2
+
+INNER JOIN (SELECT s1.emp_no, 
+	               s.salary, 
+	               s.from_date, 
+	               s.to_date 
+	        FROM salaries AS s
+	        INNER JOIN (SELECT emp_no, 
+	                           MAX(from_date) AS from_date 
+	                    FROM salaries 
+	                    GROUP BY emp_no) AS s1 
+	        ON s.emp_no = s1.emp_no 
+	        WHERE s.to_date < '2002-01-01' AND s.from_date > '2000-01-01' 
+	        AND s.from_date = s1.from_date) AS s2 
+ON s2.emp_no = de2.emp_no
+
+INNER JOIN departments AS d 
+ON d.dept_no = de2.dept_no
+GROUP BY de2.emp_no, d.dept_name
+WINDOW w AS (PARTITION BY de2.dept_no)
+ORDER BY de2.emp_no, salary;
+
+
