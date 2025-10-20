@@ -842,3 +842,42 @@ WINDOW w AS (PARTITION BY de2.dept_no)
 ORDER BY de2.emp_no, salary;
 
 
+
+
+-- Topic Common Table Expression (CTEs)
+
+-- syntax for CTEs 
+
+with cte_name  AS ( -- This is the query that defines the CTE
+                                    select col_name1, 
+                                                col_name2, .....
+                                     from  table_name
+                                     where  col_name  condition )
+
+-- This is the main query that uses the CTE
+select col_name1, 
+            col_name2, .....
+from cte_name
+where col_name condition;
+                                               
+
+-- syntax break down 
+/** 
+The WITH clause: This defines the name of the CTE (CteName) and 
+the query.
+
+The main query: This is the final SELECT (or INSERT, UPDATE, DELETE) 
+statement that uses the CTE.
+
+Note ->  Basically in CTEs Syntax we have Two parts In first part we 
+use with clause to define the cte_name and its query.
+And the second part is the main query part where we can use 
+select, insert, update, delete commands to use the above cte query 
+
+Also Note -> We cannot use insert,update and delete commands in the with 
+clause part we can only use select command inside with clause part
+
+But in the main query part we can use select, insert, update and delete 
+commands 
+
+**/
