@@ -881,3 +881,32 @@ But in the main query part we can use select, insert, update and delete
 commands 
 
 **/
+
+-- Exercise 1
+
+/** 
+
+Use a CTE (a Common Table Expression) and a SUM() function in the 
+SELECT statement in a query to find out how many salary contracts 
+signed by male employees had a salary value below or equal to the 
+all-time company average.
+In this task, a salary contract is defined as any record in the 
+salaries table.
+
+**/ 
+
+-- sol 
+
+with cte AS (
+	select avg(salary) as avg_salary
+	from salaries 
+	)
+
+select sum(case when s.salary < c.avg_salay then 1 
+                else 0
+	        end) as no_salaries_below_avg,
+       count(s.salary) as no_of_salary_contracts
+from salaries as s
+inner join employess as e
+on s.emp_no = e.emp_no and e.gender = "M" 
+inner join cte as c;
