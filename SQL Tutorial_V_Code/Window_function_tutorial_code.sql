@@ -909,7 +909,7 @@ select sum(case when s.salary < c.avg_salay then 1
 from salaries as s
 inner join employess as e
 on s.emp_no = e.emp_no and e.gender = "M" 
-inner join cte as c;
+cross join cte as c;
 
 
 
@@ -949,3 +949,69 @@ FROM employees e
 JOIN cte2 c2 ON c2.emp_no = e.emp_no
 
 JOIN cte1 c1;
+
+
+
+
+-- Exercise 
+/**Considering the salary contracts signed by female employees in 
+the company, how many have been signed for a value below the average? 
+Store the output in a column named no_f_salaries_below_avg. In a second
+column named total_no_of_salary_contracts, provide the total number of 
+contracts signed by all employees in the company.
+
+Use the salary column from the salaries table and the gender column 
+from the employees table. Match the two tables on the employee number 
+column (emp_no).
+**/ 
+-- Sol
+
+WITH cte1 AS (
+  SELECT AVG(salary) AS avg_salary FROM salaries
+),
+cte2 AS (
+  SELECT e.emp_no, s.salary, e.gender
+  FROM salaries s
+  INNER JOIN employees e 
+  on s.emp_no = e.emp_no
+)
+ 
+SELECT 
+  COUNT(CASE WHEN cte2.gender = 'F' AND cte2.salary < cte1.avg_salary THEN 1 ELSE NULL END) AS no_f_salaries_below_avg,
+  COUNT(*) AS total_no_of_salary_contracts
+FROM cte2
+INNER JOIN cte1;
+
+
+
+
+-- Exercie 
+/**
+Considering the salary contracts signed by male employees in the 
+company, how many have been signed for a value above the average? 
+Store the output in a column named no_m_salaries_above_avg. In a 
+second column named total_no_of_salary_contracts, provide the total 
+number of contracts signed by all employees in the company.
+
+Use the salary column from the salaries table and the gender column 
+from the employees table. Match the two tables on the employee number 
+column (emp_no)
+
+
+**/
+
+-- Sol 
+WITH cte1 AS (
+  SELECT AVG(salary) AS avg_salary FROM salaries
+),
+cte2 AS (
+  SELECT e.emp_no, s.salary, e.gender
+  FROM salaries s
+  INNER JOIN employees e USING (emp_no)
+)
+ 
+SELECT 
+  COUNT(CASE WHEN cte2.gender = 'M' AND cte2.salary > cte1.avg_salary THEN 1 ELSE NULL END) AS no_m_salaries_above_avg,
+  COUNT(*) AS total_no_of_salary_contracts
+FROM cte2
+INNER JOIN cte1;
