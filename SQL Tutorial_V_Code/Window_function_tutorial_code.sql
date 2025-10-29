@@ -1015,3 +1015,40 @@ SELECT
   COUNT(*) AS total_no_of_salary_contracts
 FROM cte2
 INNER JOIN cte1;
+
+
+
+-- Topic -> Temporary Table 
+
+-- Syntax for Temporary Table 
+CREATE TEMPORARY TABLE temp_table_name AS
+SELECT
+    col_name1,
+    col_name2, .....
+FROM
+    table_name
+WHERE
+    col_name condition
+GROUP BY
+    col_name
+HAVING
+    col_name condition;
+
+
+
+-- Example 
+
+create temporary table Male_highest_salaries AS 
+select s.emp_no,
+       max(s.salary) as male_highest_salary
+from salaries as s
+inner join employees as e 
+on s.emp_no = e.emp_no and e.gender = "M"
+group by s.emp_no;
+
+
+select * from Male_highest_salaries 
+where emp_no <= 10010;
+
+-- For deleting Temporary table manually use below syntax 
+drop temporary table if exists temp_table_name;
